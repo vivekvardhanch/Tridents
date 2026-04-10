@@ -3,120 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cricket Umpiring Tracker</title>
+<title>Tridents Cricket — Umpiring Tracker</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --color-background-primary: #ffffff;
-    --color-background-secondary: #f5f4f1;
-    --color-background-tertiary: #eeede9;
-    --color-text-primary: #1a1a18;
-    --color-text-secondary: #5f5e5a;
-    --color-text-tertiary: #9a9890;
-    --color-border-tertiary: rgba(26,26,24,0.12);
-    --color-border-secondary: rgba(26,26,24,0.22);
-    --border-radius-md: 8px;
-    --border-radius-lg: 12px;
-    --font-sans: system-ui, -apple-system, sans-serif;
-    --green: #1D9E75; --green-light: #E1F5EE; --green-dark: #0F6E56;
-    --amber: #BA7517; --amber-light: #FAEEDA;
-    --red: #A32D2D; --red-light: #FCEBEB;
-    --blue: #185FA5; --blue-light: #E6F1FB;
+    --bg1: #ffffff; --bg2: #f5f4f1; --bg3: #eeede9;
+    --tx1: #1a1a18; --tx2: #5f5e5a; --tx3: #9a9890;
+    --bd3: rgba(26,26,24,0.12); --bd2: rgba(26,26,24,0.22);
+    --rmd: 8px; --rlg: 12px;
+    --font: system-ui, -apple-system, sans-serif;
+    --green: #1D9E75; --gl: #E1F5EE; --gd: #0F6E56;
+    --amber: #BA7517; --al: #FAEEDA;
+    --red: #A32D2D; --rl: #FCEBEB;
+    --blue: #185FA5; --bl: #E6F1FB;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --color-background-primary: #1e1e1c;
-      --color-background-secondary: #2a2a28;
-      --color-background-tertiary: #141412;
-      --color-text-primary: #f0ede6;
-      --color-text-secondary: #a8a59e;
-      --color-text-tertiary: #6e6c67;
-      --color-border-tertiary: rgba(240,237,230,0.1);
-      --color-border-secondary: rgba(240,237,230,0.2);
+      --bg1: #1e1e1c; --bg2: #2a2a28; --bg3: #141412;
+      --tx1: #f0ede6; --tx2: #a8a59e; --tx3: #6e6c67;
+      --bd3: rgba(240,237,230,0.1); --bd2: rgba(240,237,230,0.2);
     }
   }
-  body { font-family: var(--font-sans); background: var(--color-background-tertiary); min-height: 100vh; padding: 1.5rem 1rem; }
-  .app { max-width: 900px; margin: 0 auto; }
-  .nav { display: flex; gap: 4px; margin-bottom: 1.5rem; background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 4px; border: 0.5px solid var(--color-border-tertiary); }
-  .nav-btn { flex: 1; padding: 10px 12px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--color-text-secondary); transition: all 0.15s; }
-  .nav-btn.active { background: var(--color-background-primary); color: var(--color-text-primary); border: 0.5px solid var(--color-border-tertiary); }
+  body { font-family: var(--font); background: var(--bg3); min-height: 100vh; padding: 1.5rem 1rem; }
+  .app { max-width: 920px; margin: 0 auto; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 8px; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .header-title { font-size: 18px; font-weight: 500; color: var(--tx1); }
+  .header-sub { font-size: 13px; color: var(--tx2); margin-top: 2px; }
+  .live-badge { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--gd); background: var(--gl); padding: 4px 10px; border-radius: 20px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Nav */
+  .nav { display: flex; gap: 4px; margin-bottom: 1.5rem; background: var(--bg2); border-radius: var(--rlg); padding: 4px; border: 0.5px solid var(--bd3); }
+  .nav-btn { flex: 1; padding: 10px 12px; border: none; background: transparent; border-radius: var(--rmd); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--tx2); transition: all 0.15s; font-family: var(--font); }
+  .nav-btn.active { background: var(--bg1); color: var(--tx1); border: 0.5px solid var(--bd3); }
   .section { display: none; }
   .section.active { display: block; }
+
+  /* Loading */
+  .loading { text-align: center; padding: 3rem; color: var(--tx3); font-size: 14px; }
+  .spinner { width: 24px; height: 24px; border: 2px solid var(--bd3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Poll */
   .poll-header { margin-bottom: 1.5rem; }
-  .poll-header h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
-  .poll-header p { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
-  .step-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-  .player-select-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-  select { flex: 1; padding: 8px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; font-family: var(--font-sans); cursor: pointer; }
-  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
-  .game-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; cursor: pointer; transition: all 0.15s; }
-  .game-card:hover:not(.full):not(.mine) { border-color: var(--color-border-secondary); background: var(--color-background-secondary); }
-  .game-card.mine { border-color: #1D9E75; background: #E1F5EE; }
-  .game-card.full:not(.mine) { opacity: 0.55; cursor: not-allowed; }
-  .game-num { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
-  .game-slots { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
-  .slot-pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
-  .slot-filled { background: #E1F5EE; color: #0F6E56; }
-  .slot-empty { background: var(--color-background-secondary); color: var(--color-text-tertiary); border: 0.5px dashed var(--color-border-tertiary); }
-  .slot-mine { background: #1D9E75; color: #fff; }
-  .cert-section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; margin-bottom: 1.5rem; }
-  .cert-section h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
-  .cert-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; }
-  .cert-check input { cursor: pointer; }
-  .submit-btn { background: #1D9E75; color: #fff; border: none; padding: 10px 24px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
-  .submit-btn:hover { background: #0F6E56; }
-  .submit-btn:disabled { background: var(--color-background-secondary); color: var(--color-text-tertiary); cursor: not-allowed; }
-  .remove-btn { margin-left: 10px; background: transparent; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 16px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); font-family: var(--font-sans); }
-  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1D9E75; color: #fff; padding: 10px 20px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
-  .toast.show { opacity: 1; }
-  .stats-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
-  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
-  .stat-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-  .stat-value.green { color: #0F6E56; }
-  .stat-value.amber { color: #BA7517; }
-  .stat-value.red { color: #A32D2D; }
+  .poll-header h2 { font-size: 18px; font-weight: 500; color: var(--tx1); }
+  .poll-header p { font-size: 14px; color: var(--tx2); margin-top: 4px; }
+  .step-label { font-size: 11px; font-weight: 500; color: var(--tx3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .player-select-row { margin-bottom: 1.5rem; }
+  select { width: 100%; padding: 10px 12px; border: 0.5px solid var(--bd2); border-radius: var(--rmd); background: var(--bg1); color: var(--tx1); font-size: 14px; font-family: var(--font); cursor: pointer; }
+  .cert-box { background: var(--bg1); border: 0.5px solid var(--bd3); border-radius: var(--rmd); padding: 12px 14px; margin-bottom: 1.5rem; }
+  .cert-box h3 { font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--tx1); }
+  .cert-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--tx2); cursor: pointer; }
+  .cert-label input { cursor: pointer; width: 14px; height: 14px; }
+
+  /* Games grid */
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .game-card { background: var(--bg1); border: 0.5px solid var(--bd3); border-radius: var(--rmd); padding: 12px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .game-card:hover:not(.full):not(.mine) { border-color: var(--bd2); background: var(--bg2); }
+  .game-card.mine { border-color: var(--green); background: var(--gl); }
+  .game-card.selected { outline: 2px solid var(--green); }
+  .game-card.full:not(.mine) { opacity: 0.5; cursor: not-allowed; }
+  .game-title { font-size: 14px; font-weight: 500; color: var(--tx1); }
+  .game-meta { font-size: 11px; color: var(--tx2); margin-top: 3px; line-height: 1.5; }
+  .game-loc { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+  .slots { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .pill-filled { background: var(--gl); color: var(--gd); }
+  .pill-mine { background: var(--green); color: #fff; }
+  .pill-empty { background: var(--bg2); color: var(--tx3); border: 0.5px dashed var(--bd3); }
+
+  /* Actions */
+  .action-row { margin-bottom: 1.5rem; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 24px; border-radius: var(--rmd); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; font-family: var(--font); }
+  .btn-primary:hover { background: var(--gd); }
+  .btn-primary:disabled { background: var(--bg2); color: var(--tx3); cursor: not-allowed; }
+  .btn-ghost { background: transparent; border: 0.5px solid var(--bd3); border-radius: var(--rmd); padding: 10px 16px; font-size: 13px; cursor: pointer; color: var(--tx2); font-family: var(--font); transition: background 0.15s; }
+  .btn-ghost:hover { background: var(--bg2); }
+
+  /* Dashboard */
+  .stats-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg2); border-radius: var(--rmd); padding: 12px 14px; }
+  .stat-label { font-size: 11px; color: var(--tx3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-val { font-size: 24px; font-weight: 500; color: var(--tx1); }
+  .stat-val.g { color: var(--gd); } .stat-val.a { color: var(--amber); } .stat-val.r { color: var(--red); }
   .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 600px) { .dash-grid { grid-template-columns: 1fr; } .stats-row { grid-template-columns: repeat(2, 1fr); } }
-  .dash-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; }
-  .dash-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 12px; color: var(--color-text-secondary); }
-  .player-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
-  .player-row:last-child { border-bottom: none; }
-  .player-init { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
-  .player-name { flex: 1; color: var(--color-text-primary); }
+  @media(max-width:600px){ .dash-grid{grid-template-columns:1fr} .stats-row{grid-template-columns:repeat(2,1fr)} }
+  .dash-card { background: var(--bg1); border: 0.5px solid var(--bd3); border-radius: var(--rlg); padding: 14px; }
+  .dash-card h3 { font-size: 12px; font-weight: 500; color: var(--tx3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .p-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--bd3); font-size: 13px; }
+  .p-row:last-child { border-bottom: none; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .p-name { flex: 1; color: var(--tx1); font-size: 13px; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-  .badge-green { background: #E1F5EE; color: #0F6E56; }
-  .badge-amber { background: #FAEEDA; color: #BA7517; }
-  .badge-red { background: #FCEBEB; color: #A32D2D; }
-  .badge-blue { background: #E6F1FB; color: #185FA5; }
-  .game-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
-  .game-row:last-child { border-bottom: none; }
-  .game-tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; min-width: 48px; text-align: center; flex-shrink: 0; }
-  .game-tag.covered { background: #E1F5EE; color: #0F6E56; }
-  .game-tag.partial { background: #FAEEDA; color: #BA7517; }
-  .game-tag.open { background: #FCEBEB; color: #A32D2D; }
-  .umpire-names { flex: 1; color: var(--color-text-secondary); }
-  .admin-toggle { font-size: 12px; color: var(--color-text-tertiary); cursor: pointer; text-decoration: underline; margin-top: 1rem; display: inline-block; }
-  .admin-panel { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; margin-top: 8px; border: 0.5px solid var(--color-border-tertiary); }
-  .admin-panel h4 { font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
-  .cert-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; }
-  .cert-admin-row { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 0; cursor: pointer; color: var(--color-text-secondary); }
-  .cert-admin-row input { cursor: pointer; }
-  .refresh-note { font-size: 12px; color: var(--color-text-tertiary); margin-top: 1rem; text-align: center; }
-  .header-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
-  .header-dot { width: 10px; height: 10px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
-  .header-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
-  .header-sub { font-size: 13px; color: var(--color-text-secondary); }
+  .bg { background: var(--gl); color: var(--gd); }
+  .ba { background: var(--al); color: var(--amber); }
+  .br { background: var(--rl); color: var(--red); }
+  .bb { background: var(--bl); color: var(--blue); }
+  .g-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 0.5px solid var(--bd3); }
+  .g-row:last-child { border-bottom: none; }
+  .g-tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; min-width: 44px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+  .g-tag.covered { background: var(--gl); color: var(--gd); }
+  .g-tag.partial { background: var(--al); color: var(--amber); }
+  .g-tag.open { background: var(--rl); color: var(--red); }
+  .g-info { flex: 1; }
+  .g-name { font-size: 13px; font-weight: 500; color: var(--tx1); }
+  .g-detail { font-size: 11px; color: var(--tx2); margin-top: 2px; }
+  .g-umpires { font-size: 12px; color: var(--tx2); margin-top: 3px; }
+  .g-umpires strong { color: var(--tx1); font-weight: 500; }
+
+  /* Admin */
+  .admin-toggle { font-size: 12px; color: var(--tx3); cursor: pointer; text-decoration: underline; margin-top: 1.25rem; display: inline-block; }
+  .admin-panel { background: var(--bg2); border-radius: var(--rmd); padding: 14px; margin-top: 8px; border: 0.5px solid var(--bd3); }
+  .admin-panel h4 { font-size: 13px; font-weight: 500; margin-bottom: 10px; color: var(--tx1); }
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 4px; }
+  .cert-row { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 0; cursor: pointer; color: var(--tx2); }
+  .cert-row input { cursor: pointer; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1a1a18; color: #f0ede6; padding: 10px 20px; border-radius: var(--rmd); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  .refresh-note { font-size: 11px; color: var(--tx3); margin-top: 1rem; text-align: center; }
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header-bar">
-    <div class="header-dot"></div>
-    <div>
-      <div class="header-title">Cricket Umpiring Tracker</div>
-      <div class="header-sub">11 games &middot; 18 players &middot; 2 umpires per game</div>
+  <div class="header">
+    <div class="header-left">
+      <div class="dot"></div>
+      <div>
+        <div class="header-title">Tridents Cricket — Umpiring Tracker</div>
+        <div class="header-sub">11 games &middot; 18 players &middot; 2 umpires per game</div>
+      </div>
     </div>
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
   </div>
 
   <div class="nav">
@@ -126,49 +150,74 @@
 
   <!-- POLL -->
   <div id="sect-poll" class="section active">
-    <div class="poll-header">
-      <h2>Choose your umpiring game</h2>
-      <p>Select your name, confirm your certification, then pick the game you want to umpire.</p>
-    </div>
-    <p class="step-label">Step 1 — who are you?</p>
-    <div class="player-select-row">
-      <select id="player-select" onchange="onPlayerChange()">
-        <option value="">— select your name —</option>
-      </select>
-    </div>
-    <div id="cert-section" class="cert-section" style="display:none">
-      <h3>Umpiring certification</h3>
-      <label class="cert-check">
-        <input type="checkbox" id="cert-box" onchange="onCertChange()">
-        I confirm I have completed my umpiring certification
-      </label>
-    </div>
-    <p class="step-label" id="step2-label" style="display:none">Step 2 — pick a game to umpire (each game needs 2 umpires)</p>
-    <div class="games-grid" id="games-grid"></div>
-    <div id="action-row" style="display:none">
-      <button class="submit-btn" id="submit-btn" onclick="submitChoice()" disabled>Confirm selection</button>
-      <button class="remove-btn" id="remove-btn" onclick="removeChoice()" style="display:none">Remove my sign-up</button>
+    <div id="poll-loading" class="loading"><div class="spinner"></div>Connecting to live database…</div>
+    <div id="poll-content" style="display:none">
+      <div class="poll-header">
+        <h2>Choose your umpiring game</h2>
+        <p>Select your name, confirm your certification, then pick a game to umpire.</p>
+      </div>
+      <p class="step-label">Step 1 — who are you?</p>
+      <div class="player-select-row">
+        <select id="player-select" onchange="onPlayerChange()">
+          <option value="">— select your name —</option>
+        </select>
+      </div>
+      <div id="cert-section" class="cert-box" style="display:none">
+        <h3>Umpiring certification</h3>
+        <label class="cert-label">
+          <input type="checkbox" id="cert-box" onchange="onCertChange()">
+          I confirm I have completed my umpiring certification
+        </label>
+      </div>
+      <p class="step-label" id="step2-label" style="display:none">Step 2 — pick a game (2 umpires needed per game)</p>
+      <div class="games-grid" id="games-grid"></div>
+      <div id="action-row" class="action-row" style="display:none">
+        <button class="btn-primary" id="submit-btn" onclick="submitChoice()" disabled>Confirm selection</button>
+        <button class="btn-ghost" id="remove-btn" onclick="removeChoice()" style="display:none">Remove my sign-up</button>
+      </div>
     </div>
   </div>
 
   <!-- DASHBOARD -->
   <div id="sect-dashboard" class="section">
-    <div id="stats-row" class="stats-row"></div>
-    <div class="dash-grid">
-      <div class="dash-card"><h3>Player status</h3><div id="player-list"></div></div>
-      <div class="dash-card"><h3>Game coverage</h3><div id="game-list"></div></div>
+    <div id="dash-loading" class="loading"><div class="spinner"></div>Loading dashboard…</div>
+    <div id="dash-content" style="display:none">
+      <div id="stats-row" class="stats-row"></div>
+      <div class="dash-grid">
+        <div class="dash-card"><h3>Player status</h3><div id="player-list"></div></div>
+        <div class="dash-card"><h3>Game coverage</h3><div id="game-list"></div></div>
+      </div>
+      <span class="admin-toggle" onclick="toggleAdmin()">Captain admin panel — manage certifications</span>
+      <div class="admin-panel" id="admin-panel" style="display:none">
+        <h4>Mark certifications as completed</h4>
+        <div class="cert-grid" id="cert-admin-grid"></div>
+      </div>
+      <p class="refresh-note" id="refresh-note"></p>
     </div>
-    <span class="admin-toggle" onclick="toggleAdmin()">Captain admin panel (manage certifications)</span>
-    <div class="admin-panel" id="admin-panel" style="display:none">
-      <h4>Mark certifications as completed</h4>
-      <div class="cert-admin-grid" id="cert-admin-grid"></div>
-    </div>
-    <p class="refresh-note" id="refresh-note"></p>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
-<script>
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCf4yVEVYJlClHy32xT-gJGMvLRYqTL1WA",
+  authDomain: "tridents-cricket-umpiring.firebaseapp.com",
+  databaseURL: "https://tridents-cricket-umpiring-default-rtdb.firebaseio.com",
+  projectId: "tridents-cricket-umpiring",
+  storageBucket: "tridents-cricket-umpiring.firebasestorage.app",
+  messagingSenderId: "326410349165",
+  appId: "1:326410349165:web:3fac546c1bb8bed8f46d64",
+  measurementId: "G-1MK01H7LEL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── Data ──────────────────────────────────────────────────────────────
 const PLAYERS = [
   "Phani Someshwar","HariAnirban Chakraborty","Guru Prasad Selvarajan","Hemanth",
   "Kuraku Vinod","Navaneeth Narayanaswamy","Nikhil Kasula","Ravi Singiresu",
@@ -176,183 +225,273 @@ const PLAYERS = [
   "Santhosh Kumar Peri","Sivapradeep Kolluri","Srikanth G",
   "Vishwadhar Shreedhar","Vivek Chapa","Vivek Teja","Yasaswi Ravipati"
 ];
-const GAME_NAMES = ["Game 1","Game 2","Game 3","Game 4","Game 5","Game 6","Game 7","Game 8","Game 9","Game 10","Game 11"];
+
+// ── UPDATE THESE with real dates, times, and locations ─────────────────
+const GAMES = [
+  { name:"Game 1",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 2",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 3",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 4",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 5",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 6",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 7",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 8",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 9",  date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 10", date:"TBD", time:"TBD", location:"TBD" },
+  { name:"Game 11", date:"TBD", time:"TBD", location:"TBD" },
+];
+
 const COLORS = ['#E1F5EE','#E6F1FB','#FAEEDA','#FCEBEB','#EEEDFE','#EAF3DE'];
 const TCOLORS = ['#0F6E56','#185FA5','#BA7517','#A32D2D','#3C3489','#3B6D11'];
+function playerColor(name){ const i=PLAYERS.indexOf(name)%COLORS.length; return {bg:COLORS[i],fg:TCOLORS[i]}; }
+function initials(name){ return name.split(' ').slice(0,2).map(w=>w[0].toUpperCase()).join(''); }
 
-let state = null;
+// ── Live state from Firebase ──────────────────────────────────────────
+let state = { assignments:{}, certs:{}, playerGame:{} };
 let currentPlayer = "";
 let selectedGame = null;
+let dbReady = false;
 
-const STORAGE_KEY = "cricket_umpire_state_v1";
+const stateRef = ref(db, "umpiring");
 
-function initState() { return { assignments: {}, certs: {}, playerGame: {} }; }
+// Subscribe to live updates
+onValue(stateRef, snap => {
+  const val = snap.val();
+  state = val || { assignments:{}, certs:{}, playerGame:{} };
+  if (!state.assignments) state.assignments = {};
+  if (!state.certs) state.certs = {};
+  if (!state.playerGame) state.playerGame = {};
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    state = raw ? JSON.parse(raw) : initState();
-  } catch(e) { state = initState(); }
+  if (!dbReady) {
+    dbReady = true;
+    document.getElementById('poll-loading').style.display = 'none';
+    document.getElementById('poll-content').style.display = 'block';
+    document.getElementById('dash-loading').style.display = 'none';
+    document.getElementById('dash-content').style.display = 'block';
+    populatePlayerSelect();
+  }
+
+  renderGames();
+  updateActionRow();
+  if (document.getElementById('sect-dashboard').classList.contains('active')) {
+    renderDashboard();
+  }
+  document.getElementById('refresh-note').textContent = 'Live · last synced ' + new Date().toLocaleTimeString();
+});
+
+async function saveState() {
+  await set(stateRef, state);
 }
 
-function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-}
-
-function showSection(id, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sect-' + id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'dashboard') renderDashboard();
-}
-
-function getInitials(name) { return name.split(' ').slice(0,2).map(w=>w[0].toUpperCase()).join(''); }
-function playerColor(name) { const i=PLAYERS.indexOf(name)%COLORS.length; return {bg:COLORS[i],fg:TCOLORS[i]}; }
-
+// ── Poll logic ────────────────────────────────────────────────────────
 function populatePlayerSelect() {
   const sel = document.getElementById('player-select');
+  sel.innerHTML = '<option value="">— select your name —</option>';
   PLAYERS.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; sel.appendChild(o); });
 }
 
-function onPlayerChange() {
+window.onPlayerChange = function() {
   currentPlayer = document.getElementById('player-select').value;
   selectedGame = null;
-  const certSection = document.getElementById('cert-section');
-  if (!currentPlayer) { certSection.style.display='none'; document.getElementById('step2-label').style.display='none'; document.getElementById('action-row').style.display='none'; renderGames(); return; }
-  certSection.style.display='block';
+  const certSec = document.getElementById('cert-section');
+  if (!currentPlayer) {
+    certSec.style.display='none';
+    document.getElementById('step2-label').style.display='none';
+    document.getElementById('action-row').style.display='none';
+    renderGames(); return;
+  }
+  certSec.style.display='block';
   document.getElementById('cert-box').checked = !!(state.certs[currentPlayer]);
   const hasCert = !!(state.certs[currentPlayer]);
-  document.getElementById('step2-label').style.display = hasCert ? 'block' : 'none';
-  renderGames();
-  updateActionRow();
-}
+  document.getElementById('step2-label').style.display = hasCert?'block':'none';
+  renderGames(); updateActionRow();
+};
 
-function onCertChange() {
+window.onCertChange = async function() {
   if (!currentPlayer) return;
   state.certs[currentPlayer] = document.getElementById('cert-box').checked;
-  saveState();
+  await saveState();
   const hasCert = !!(state.certs[currentPlayer]);
-  document.getElementById('step2-label').style.display = hasCert ? 'block' : 'none';
+  document.getElementById('step2-label').style.display = hasCert?'block':'none';
   renderGames(); updateActionRow();
-}
+};
 
 function updateActionRow() {
-  const ar = document.getElementById('action-row');
+  if (!currentPlayer) return;
   const hasCert = !!(state.certs[currentPlayer]);
   const hasGame = state.playerGame[currentPlayer] !== undefined;
-  ar.style.display = (currentPlayer && hasCert) ? 'block' : 'none';
-  document.getElementById('submit-btn').disabled = (selectedGame === null && !hasGame);
-  document.getElementById('remove-btn').style.display = hasGame ? 'inline-block' : 'none';
+  document.getElementById('action-row').style.display = (currentPlayer && hasCert)?'block':'none';
+  const canSubmit = selectedGame !== null || hasGame;
+  document.getElementById('submit-btn').disabled = !canSubmit;
+  document.getElementById('remove-btn').style.display = hasGame?'inline-block':'none';
 }
 
 function renderGames() {
   const grid = document.getElementById('games-grid');
+  if (!grid) return;
   const hasCert = currentPlayer && !!(state.certs[currentPlayer]);
   grid.innerHTML = '';
-  GAME_NAMES.forEach((gname, gi) => {
-    const slots = state.assignments[gi] || [];
+  GAMES.forEach((g, gi) => {
+    const slots = state.assignments[gi] ? Object.values(state.assignments[gi]) : [];
     const isMine = currentPlayer && slots.includes(currentPlayer);
     const isFull = slots.length >= 2 && !isMine;
     const isSelected = selectedGame === gi;
+
     const card = document.createElement('div');
-    card.className = 'game-card' + (isMine ? ' mine' : '') + (isFull ? ' full' : '');
-    if (isSelected) card.style.outline = '2px solid #1D9E75';
-    if (!isFull && !isMine && hasCert) card.onclick = () => { selectedGame = gi; renderGames(); updateActionRow(); };
-    let slotsHtml = '';
-    for (let s=0;s<2;s++) {
-      if (slots[s]) { const cls=slots[s]===currentPlayer?'slot-mine':'slot-filled'; slotsHtml+=`<span class="slot-pill ${cls}">${slots[s].split(' ')[0]}</span>`; }
-      else { slotsHtml+=`<span class="slot-pill slot-empty">open</span>`; }
+    card.className = 'game-card' + (isMine?' mine':'') + (isFull?' full':'') + (isSelected?' selected':'');
+    if (!isFull && !isMine && hasCert) {
+      card.onclick = () => { selectedGame = gi; renderGames(); updateActionRow(); };
     }
-    card.innerHTML = `<div class="game-num">${gname}${isMine?' ✓':''}</div><div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">${slots.length}/2 umpires</div><div class="game-slots">${slotsHtml}</div>`;
+
+    let slotsHtml = '';
+    for (let s=0; s<2; s++) {
+      if (slots[s]) {
+        const cls = slots[s]===currentPlayer?'pill-mine':'pill-filled';
+        slotsHtml += `<span class="pill ${cls}">${slots[s].split(' ')[0]}</span>`;
+      } else {
+        slotsHtml += `<span class="pill pill-empty">open</span>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="game-title">${g.name}${isMine?' ✓':''}</div>
+      <div class="game-meta">${g.date}${g.time!=='TBD'?' &middot; '+g.time:''}</div>
+      <div class="game-loc">${g.location}</div>
+      <div class="slots">${slotsHtml}</div>`;
     grid.appendChild(card);
   });
 }
 
-function submitChoice() {
+window.submitChoice = async function() {
   if (!currentPlayer) return;
   const gi = selectedGame !== null ? selectedGame : state.playerGame[currentPlayer];
   if (gi === undefined || gi === null) { showToast('Please select a game first'); return; }
-  const oldGame = state.playerGame[currentPlayer];
-  if (oldGame !== undefined) state.assignments[oldGame] = (state.assignments[oldGame]||[]).filter(p=>p!==currentPlayer);
-  if (!state.assignments[gi]) state.assignments[gi] = [];
-  if (!state.assignments[gi].includes(currentPlayer)) {
-    if (state.assignments[gi].length >= 2) { showToast('This game is already full'); return; }
-    state.assignments[gi].push(currentPlayer);
+
+  const slots = state.assignments[gi] ? Object.values(state.assignments[gi]) : [];
+  if (slots.length >= 2 && !slots.includes(currentPlayer)) { showToast('This game is already full'); return; }
+
+  // Remove old assignment
+  const oldGi = state.playerGame[currentPlayer];
+  if (oldGi !== undefined && oldGi !== null) {
+    if (state.assignments[oldGi]) {
+      const filtered = Object.values(state.assignments[oldGi]).filter(p=>p!==currentPlayer);
+      state.assignments[oldGi] = filtered.length ? Object.fromEntries(filtered.map((p,i)=>[i,p])) : {};
+    }
+  }
+
+  // Add new
+  if (!state.assignments[gi]) state.assignments[gi] = {};
+  const existing = Object.values(state.assignments[gi]);
+  if (!existing.includes(currentPlayer)) {
+    state.assignments[gi][existing.length] = currentPlayer;
   }
   state.playerGame[currentPlayer] = gi;
   selectedGame = null;
-  saveState();
-  showToast('Signed up for ' + GAME_NAMES[gi] + '!');
-  renderGames(); updateActionRow();
-}
+  await saveState();
+  showToast('Signed up for ' + GAMES[gi].name + '!');
+};
 
-function removeChoice() {
+window.removeChoice = async function() {
   if (!currentPlayer) return;
   const gi = state.playerGame[currentPlayer];
-  if (gi !== undefined) { state.assignments[gi]=(state.assignments[gi]||[]).filter(p=>p!==currentPlayer); delete state.playerGame[currentPlayer]; }
-  saveState(); showToast('Sign-up removed'); selectedGame=null; renderGames(); updateActionRow();
-}
+  if (gi !== undefined && gi !== null) {
+    if (state.assignments[gi]) {
+      const filtered = Object.values(state.assignments[gi]).filter(p=>p!==currentPlayer);
+      state.assignments[gi] = filtered.length ? Object.fromEntries(filtered.map((p,i)=>[i,p])) : {};
+    }
+    delete state.playerGame[currentPlayer];
+  }
+  selectedGame = null;
+  await saveState();
+  showToast('Sign-up removed');
+};
 
+// ── Dashboard ─────────────────────────────────────────────────────────
 function renderDashboard() {
-  const totalAssigned = Object.values(state.playerGame).length;
   const totalCert = Object.values(state.certs).filter(Boolean).length;
-  const gamesFullyCovered = GAME_NAMES.filter((_,i)=>(state.assignments[i]||[]).length>=2).length;
+  const totalAssigned = Object.keys(state.playerGame).length;
+  const gamesCovered = GAMES.filter((_,i)=>{ const s=state.assignments[i]?Object.values(state.assignments[i]):[];return s.length>=2;}).length;
+  const gamesOpen = 11 - gamesCovered;
+
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card"><div class="stat-label">Certified players</div><div class="stat-value ${totalCert===18?'green':totalCert>10?'amber':'red'}">${totalCert}/18</div></div>
-    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-value ${totalAssigned===18?'green':totalAssigned>10?'amber':'red'}">${totalAssigned}/18</div></div>
-    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-value ${gamesFullyCovered===11?'green':gamesFullyCovered>6?'amber':'red'}">${gamesFullyCovered}/11</div></div>
-    <div class="stat-card"><div class="stat-label">Games open</div><div class="stat-value ${(11-gamesFullyCovered)===0?'green':(11-gamesFullyCovered)<4?'amber':'red'}">${11-gamesFullyCovered}</div></div>`;
+    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-val ${totalCert===18?'g':totalCert>10?'a':'r'}">${totalCert}/18</div></div>
+    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-val ${totalAssigned===18?'g':totalAssigned>10?'a':'r'}">${totalAssigned}/18</div></div>
+    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-val ${gamesCovered===11?'g':gamesCovered>6?'a':'r'}">${gamesCovered}/11</div></div>
+    <div class="stat-card"><div class="stat-label">Games open</div><div class="stat-val ${gamesOpen===0?'g':gamesOpen<4?'a':'r'}">${gamesOpen}</div></div>`;
+
+  // Player list
   const pl = document.getElementById('player-list');
   pl.innerHTML = '';
   PLAYERS.forEach(p => {
-    const hasCert=!!(state.certs[p]); const gi=state.playerGame[p]; const hasGame=gi!==undefined;
+    const hasCert=!!(state.certs[p]);
+    const gi=state.playerGame[p];
+    const hasGame=gi!==undefined && gi!==null;
     const {bg,fg}=playerColor(p);
-    const statusBadge = (!hasCert)?`<span class="badge badge-red">no cert</span>`:hasGame?`<span class="badge badge-green">Game ${gi+1}</span>`:`<span class="badge badge-amber">cert ✓ not signed</span>`;
-    const row=document.createElement('div'); row.className='player-row';
-    row.innerHTML=`<div class="player-init" style="background:${bg};color:${fg}">${getInitials(p)}</div><div class="player-name">${p}</div>${statusBadge}`;
+    const badge = !hasCert
+      ? `<span class="badge br">no cert</span>`
+      : hasGame
+        ? `<span class="badge bg">Game ${Number(gi)+1}</span>`
+        : `<span class="badge ba">cert · not signed</span>`;
+    const row=document.createElement('div'); row.className='p-row';
+    row.innerHTML=`<div class="avatar" style="background:${bg};color:${fg}">${initials(p)}</div><div class="p-name">${p}</div>${badge}`;
     pl.appendChild(row);
   });
+
+  // Game list
   const gl = document.getElementById('game-list');
   gl.innerHTML = '';
-  GAME_NAMES.forEach((gname,gi)=>{
-    const slots=state.assignments[gi]||[]; const count=slots.length;
-    const tagClass=count>=2?'covered':count===1?'partial':'open';
-    const tagText=count>=2?'full':count===1?'1/2':'open';
-    const names=count===0?'<span style="color:var(--color-text-tertiary)">No umpires yet</span>':slots.map(p=>`<strong>${p.split(' ')[0]}</strong>`).join(', ');
-    const row=document.createElement('div'); row.className='game-row';
-    row.innerHTML=`<span class="game-tag ${tagClass}">${tagText}</span><div style="flex:1"><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">${gname}</div><div class="umpire-names" style="font-size:12px;margin-top:2px">${names}</div></div>`;
+  GAMES.forEach((g,gi) => {
+    const slots = state.assignments[gi] ? Object.values(state.assignments[gi]) : [];
+    const count = slots.length;
+    const tagClass = count>=2?'covered':count===1?'partial':'open';
+    const tagText = count>=2?'Full':count===1?'1/2':'Open';
+    const names = count===0
+      ? '<span style="color:var(--tx3)">No umpires yet</span>'
+      : slots.map(p=>`<strong>${p.split(' ')[0]}</strong>`).join(' &amp; ');
+    const row=document.createElement('div'); row.className='g-row';
+    row.innerHTML=`
+      <span class="g-tag ${tagClass}">${tagText}</span>
+      <div class="g-info">
+        <div class="g-name">${g.name}</div>
+        <div class="g-detail">${g.date !== 'TBD' ? g.date : ''}${g.time !== 'TBD' ? ' · ' + g.time : ''}${g.location !== 'TBD' ? ' · ' + g.location : ''}</div>
+        <div class="g-umpires">${names}</div>
+      </div>`;
     gl.appendChild(row);
   });
-  document.getElementById('refresh-note').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
   renderCertAdmin();
 }
 
-function toggleAdmin() {
+window.toggleAdmin = function() {
   const p=document.getElementById('admin-panel');
   p.style.display=p.style.display==='none'?'block':'none';
   renderCertAdmin();
-}
+};
 
 function renderCertAdmin() {
   const grid=document.getElementById('cert-admin-grid');
+  if (!grid) return;
   grid.innerHTML='';
-  PLAYERS.forEach(p=>{
-    const row=document.createElement('label'); row.className='cert-admin-row';
-    row.innerHTML=`<input type="checkbox" ${state.certs[p]?'checked':''} data-player="${p}"> ${p}`;
-    row.querySelector('input').onchange=(e)=>{ state.certs[p]=e.target.checked; saveState(); renderDashboard(); };
+  PLAYERS.forEach(p => {
+    const row=document.createElement('label'); row.className='cert-row';
+    row.innerHTML=`<input type="checkbox" ${state.certs[p]?'checked':''}> ${p}`;
+    row.querySelector('input').onchange=async(e)=>{ state.certs[p]=e.target.checked; await saveState(); };
     grid.appendChild(row);
   });
 }
+
+window.showSection = function(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sect-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='dashboard') renderDashboard();
+};
 
 function showToast(msg) {
   const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
 }
-
-loadState();
-populatePlayerSelect();
-renderGames();
 </script>
 </body>
 </html>
