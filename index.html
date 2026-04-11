@@ -137,7 +137,7 @@
       <div class="dot"></div>
       <div>
         <div class="header-title">Tridents Cricket — Umpiring Tracker</div>
-        <div class="header-sub">11 games &middot; 18 players &middot; 2 umpires per game</div>
+        <div class="header-sub">8 games &middot; 18 players &middot; 2 umpires per game</div>
       </div>
     </div>
     <div class="live-badge"><div class="live-dot"></div>Live</div>
@@ -415,9 +415,9 @@ function renderDashboard() {
   const gamesOpen = 11 - gamesCovered;
 
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-val ${totalCert===18?'g':totalCert>10?'a':'r'}">${totalCert}/18</div></div>
-    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-val ${totalAssigned===18?'g':totalAssigned>10?'a':'r'}">${totalAssigned}/18</div></div>
-    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-val ${gamesCovered===11?'g':gamesCovered>6?'a':'r'}">${gamesCovered}/11</div></div>
+    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-val ${totalCert===21?'g':totalCert>10?'a':'r'}">${totalCert}/21</div></div>
+    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-val ${totalAssigned===21?'g':totalAssigned>10?'a':'r'}">${totalAssigned}/21</div></div>
+    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-val ${gamesCovered===8?'g':gamesCovered>6?'a':'r'}">${gamesCovered}/8</div></div>
     <div class="stat-card"><div class="stat-label">Games open</div><div class="stat-val ${gamesOpen===0?'g':gamesOpen<4?'a':'r'}">${gamesOpen}</div></div>`;
 
   // Player list
