@@ -109,7 +109,7 @@
   .g-tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; min-width: 44px; text-align: center; flex-shrink: 0; margin-top: 1px; }
   .g-tag.covered { background: var(--gl); color: var(--gd); }
   .g-tag.partial { background: var(--al); color: var(--amber); }
-  .g-tag.open { background: var(--rl); color: var(--red); }
+  .g-tag. { background: var(--rl); color: var(--red); }
   .g-info { flex: 1; }
   .g-name { font-size: 13px; font-weight: 500; color: var(--tx1); }
   .g-detail { font-size: 11px; color: var(--tx2); margin-top: 2px; }
@@ -137,7 +137,7 @@
       <div class="dot"></div>
       <div>
         <div class="header-title">Tridents Cricket — Umpiring Tracker</div>
-        <div class="header-sub">8 games &middot; 18 players &middot; 2 umpires per game</div>
+        <div class="header-sub" id="header-sub">Loading…</div>
       </div>
     </div>
     <div class="live-badge"><div class="live-dot"></div>Live</div>
@@ -224,7 +224,7 @@ const PLAYERS = [
   "Revanth Gajjala","Sai Sanath Krishnappagari","Sai Shanker Gaddam",
   "Santhosh Kumar Peri","Sivapradeep Kolluri","Srikanth G",
   "Vishwadhar Shreedhar","Vivek Chapa","Vivek Teja","Yasaswi Ravipati",
-  "Chennai Super Kings","Predators","RTP Tigers"
+  "Sumanta Boruah","Chennai Super Kings","Predators","RTP Tigers"
 ];
 
 // ── UPDATE THESE with real dates, times, and locations ─────────────────
@@ -350,7 +350,7 @@ function renderGames() {
         const cls = slots[s]===currentPlayer?'pill-mine':'pill-filled';
         slotsHtml += `<span class="pill ${cls}">${slots[s].split(' ')[0]}</span>`;
       } else {
-        slotsHtml += `<span class="pill pill-empty">open</span>`;
+        slotsHtml += `<span class="pill pill-empty"></span>`;
       }
     }
 
@@ -411,13 +411,20 @@ window.removeChoice = async function() {
 function renderDashboard() {
   const totalCert = Object.values(state.certs).filter(Boolean).length;
   const totalAssigned = Object.keys(state.playerGame).length;
+  const totalGames = GAMES.length;
+  const totalPlayers = PLAYERS.length;
   const gamesCovered = GAMES.filter((_,i)=>{ const s=state.assignments[i]?Object.values(state.assignments[i]):[];return s.length>=2;}).length;
-  const gamesOpen = 11 - gamesCovered;
+  const gamesOpen = totalGames - gamesCovered;
 
+ // Update header subtitle dynamically
+  const headerSub = document.getElementById('header-sub');
+  if (headerSub) headerSub.innerHTML = `${totalGames} games &middot; ${totalPlayers} players &middot; 2 umpires per game`;
+
+  const halfPlayers = Math.floor(totalPlayers / 2);
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-val ${totalCert===21?'g':totalCert>10?'a':'r'}">${totalCert}/21</div></div>
-    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-val ${totalAssigned===21?'g':totalAssigned>10?'a':'r'}">${totalAssigned}/21</div></div>
-    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-val ${gamesCovered===8?'g':gamesCovered>6?'a':'r'}">${gamesCovered}/8</div></div>
+    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-val ${totalCert===totalPlayers?'g':totalCert>halfPlayers?'a':'r'}">${totalCert}/${totalPlayers}</div></div>
+    <div class="stat-card"><div class="stat-label">Signed up</div><div class="stat-val ${totalAssigned===totalPlayers?'g':totalAssigned>halfPlayers?'a':'r'}">${totalAssigned}/${totalPlayers}</div></div>
+    <div class="stat-card"><div class="stat-label">Games covered</div><div class="stat-val ${gamesCovered===totalGames?'g':gamesCovered>Math.floor(totalGames/2)?'a':'r'}">${gamesCovered}/${totalGames}</div></div>
     <div class="stat-card"><div class="stat-label">Games open</div><div class="stat-val ${gamesOpen===0?'g':gamesOpen<4?'a':'r'}">${gamesOpen}</div></div>`;
 
   // Player list
@@ -431,7 +438,7 @@ function renderDashboard() {
     const badge = !hasCert
       ? `<span class="badge br">no cert</span>`
       : hasGame
-        ? `<span class="badge bg">Game ${Number(gi)+1}</span>`
+        ? `<span class="badge bg" title="${GAMES[Number(gi)]?.name}">${GAMES[Number(gi)]?.name?.split(' ')[0] ?? ''} ${GAMES[Number(gi)]?.date ?? ''}</span>`
         : `<span class="badge ba">cert · not signed</span>`;
     const row=document.createElement('div'); row.className='p-row';
     row.innerHTML=`<div class="avatar" style="background:${bg};color:${fg}">${initials(p)}</div><div class="p-name">${p}</div>${badge}`;
